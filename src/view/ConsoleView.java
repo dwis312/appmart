@@ -1,10 +1,67 @@
 package view;
 
-import controller.Controller;
 import helper.Helper;
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Locale;
+import java.util.Scanner;
+import model.Barang;
 
 public class ConsoleView {
-    private Controller app = new Controller();
+    private final Scanner input;
+    private NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("in", "ID"));
+
+    public ConsoleView(Scanner input) {
+        this.input = input;
+    }
+
+    public int getInputInt() {
+        int pilihan = Helper.inputInt(input);
+        return pilihan;
+    }
+    
+    public Scanner getInput() {
+        return input;
+    }
+
+    public String getKode() {
+        System.out.print("\nMasukan kode barang: ");
+        return Helper.inputStr(input);
+    }
+
+    public String getFormStr(String message) {
+        System.out.print(message);
+        return Helper.inputStr(input);
+    }
+
+    public int getFormInt(String message) {
+        System.out.print(message);
+        return Helper.inputInt(input);
+    }
+
+    public double getFormDbl(String message) {
+        System.out.print(message);
+        return Helper.inputDouble(input);
+    }
+
+    public String getNama() {
+        System.out.print("\nMasukan Nama barang: ");
+        return Helper.inputStr(input);
+    }
+
+    public int getJumlah() {
+        System.out.print("Jumlah barang: ");
+        return Helper.inputInt(input);
+    }
+
+    public double getHarga() {
+        System.out.print("Harga barang: ");
+        return Helper.inputDouble(input);
+    }
+
+    public void displayMsg(String message) {
+        System.out.println(message);
+    }
 
     public void menu() {
         Helper.clearScreen();
@@ -19,47 +76,36 @@ public class ConsoleView {
         System.out.print("Pilih : ");
     }
 
-    public void menuPilihan(int pilihan) {
-        switch (pilihan) {
-            case 1:
-                Helper.clearScreen();
-                System.out.println("\n=== Menu Tambah ===");
-                app.getTambah();
-                break;
-            case 2:
-                Helper.clearScreen();
-                System.out.println("\n=== Update Data Barang ===");
-                app.getUpdate();
-                break;
-            case 3:
-                Helper.clearScreen();
-                System.out.println("\n=== List Daftar Barang ===");
-                listBarang();
-                app.getAll();
-                break;
-            case 4:
-                Helper.clearScreen();
-                System.out.println("\n=== Hapus Data Barang ===");
-                listBarang();
-                app.getHapus();
-                break;
-            case 0:
-                app.isExit(pilihan);
-                break;
-            default:
-                System.out.println("Pilihan tidak valid.");
-                break;
-        }
-    }
-
     public void listBarang() {
         System.out.println("------------------------------------------------------------");
         System.out.printf("| %-2s | %-5s | %-7s | %-7s | %-15s |\n",
-                                "No",
-                                "ID Barang",
-                                "Nama Barang",
-                                "Jumlah",
-                                "Harga");
+        "No",
+        "ID Barang",
+        "Nama Barang",
+        "Jumlah",
+        "Harga");
+        System.out.println("------------------------------------------------------------");
+    }
+
+    public void dataBarang(String id, String nama, int jumlah, double harga) {
+        System.out.printf("| %-2s | %-9s | %-11s | %-7s | %-15s |\n",
+        "1",
+        id,
+        nama,
+        jumlah,
+        formatRupiah.format(harga));
+        System.out.println("------------------------------------------------------------");
+    }
+
+    public void allBarang(List<Barang> daftarBarang) {
+        for (int i = 0; i < daftarBarang.size(); i++) {
+                System.out.printf("| %-2s | %-9s | %-11s | %-7s | %-15s |\n",
+                                i+1,
+                                daftarBarang.get(i).getId(),
+                                daftarBarang.get(i).getNama(),
+                                daftarBarang.get(i).getJumlah(),
+                                formatRupiah.format(daftarBarang.get(i).getHarga()));
+        }
         System.out.println("------------------------------------------------------------");
     }
 
