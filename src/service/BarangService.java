@@ -2,7 +2,6 @@ package service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import model.Barang;
 
 public class BarangService {
@@ -68,25 +67,14 @@ public class BarangService {
         }
     }
 
-    public Barang hapusData(int index) {
-        int[] indexMap = new int[daftarBarang.size()];
-        int count = 1;
+    public void hapusData(String id) {
+        Barang exBarang = cariId(id);
 
-        for (int i = 0; i < daftarBarang.size(); i++) {
-            indexMap[count] = i;
-            count++;
+        if(exBarang.getId().equalsIgnoreCase(id)) {
+            System.out.println(exBarang.getId()+ " - " + exBarang.getNama() + " Dihapus.");
+            daftarBarang.remove(exBarang);
         }
 
-        if (index >= 1 && index <= count) {
-            int numIndex = indexMap[index - 1];
-            System.out.println("Hapus Data:");
-            System.out.println(daftarBarang.get(numIndex).getId());
-            System.out.println(daftarBarang.get(numIndex).getNama());
-            return daftarBarang.get(numIndex);
-        } else {
-            System.out.println("Pilihan tidak valid.");
-            return null;
-        }
     }
 
 }

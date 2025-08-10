@@ -1,11 +1,10 @@
 package controller;
 
+import helper.Helper;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
-
-import helper.Helper;
 import model.Barang;
 import service.BarangService;
 import view.ConsoleView;
@@ -21,12 +20,12 @@ public class Controller {
 
     public void run() {
         menu = new ConsoleView();
-        exit = false;
 
         while (!exit) {
             menu.menu();
             pilihan = Helper.inputInt(input);
-            exit = menu.menuPilihan(pilihan);
+            menu.menuPilihan(pilihan);
+            exit = isExit(pilihan);
         }
         Helper.clearScreen();
         System.out.println("Program Berhenti.");
@@ -38,8 +37,12 @@ public class Controller {
         this.input = input;
     }
 
-    public boolean isExit() {
-        return true;
+    public boolean isExit(int num) {
+        if(num == 0) {
+            return exit = true;
+        } else {
+            return false;
+        }
     }
 
     public void getTambah() {
@@ -60,16 +63,21 @@ public class Controller {
     }
 
     public void getUpdate() {
+        
+        if (barang.getAllData().isEmpty()) {
+            System.out.println("Data masih kosong.");
+            Helper.enterToContinue(input);
+            return;
+        }
+        
         System.out.print("\nMasukan Kode barang: ");
         String keyword = input.nextLine();
-
-        if (barang.getAllData() == null) {
-            System.out.println("Data masih kosong.");
-            return;
-        } else if (barang.cariId(keyword) == null) {
+        
+        if (barang.cariId(keyword) == null) {
             System.out.println("Data tidak ditemukan.");
             return;
         }
+
 
         Barang exBarang = barang.cariId(keyword);
         String id = exBarang.getId();
@@ -110,8 +118,9 @@ public class Controller {
     }
 
     public void getAll() {
-        if (barang.getAllData() == null) {
+        if (barang.getAllData().isEmpty()) {
             System.out.println("Data masih kosong.");
+            Helper.enterToContinue(input);
             return;
         }
 
@@ -150,15 +159,46 @@ public class Controller {
         System.out.println("\n**Pilih nomor 0 untuk kembali...");
         System.out.println("\nPilih Data yang akan dihapus: ");
         System.out.print("Pilih No: ");
-        int no = Helper.inputInt(input);
+        int index = Helper.inputInt(input);
 
-        if (no == 0) {
+        if (index == 0) {
             return;
         }
+        
+        int[] indexMap = new int[daftarBarang.size()];
+        int count = 0;
 
-        Barang exBarang = barang.hapusData(no);
-        System.out.println(exBarang.getId());
-        System.out.println(exBarang.getNama());
+        for (int i = 0; i < daftarBarang.size(); i++) {
+            indexMap[count] = i;
+            count++;
+        }
+
+        if (index >= 1 && index <= count) {
+            int numIndex = indexMap[index - 1];
+            System.out.print("Hapus Data: ");
+            System.out.print(" " + daftarBarang.get(numIndex).getId());
+            System.out.print(" - " + daftarBarang.get(numIndex).getNama());
+            System.out.println();
+
+            String id = daftarBarang.get(numIndex).getId();
+            int konfirm = -1;
+
+            System.out.println("Yakin hapus ?");
+            System.out.println("1. Ya, Hapus data.");
+            System.out.println("2. Batalkan.");
+            System.out.print("Pilih: ");
+            konfirm = Helper.inputInt(input);
+
+            if (konfirm == 1 && !id.isEmpty()) {
+                System.out.println("Hapus data berhasil");
+                barang.hapusData(id);
+            } else {
+                System.out.println("Batalkan.");
+            }
+        } else {
+            System.out.println("Pilihan tidak valid.");
+        }
+        Helper.enterToContinue(input);
 
     }
 

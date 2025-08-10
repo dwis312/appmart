@@ -19,7 +19,7 @@ public class ConsoleView {
         System.out.print("Pilih : ");
     }
 
-    public boolean menuPilihan(int pilihan) {
+    public void menuPilihan(int pilihan) {
         switch (pilihan) {
             case 1:
                 Helper.clearScreen();
@@ -44,13 +44,12 @@ public class ConsoleView {
                 app.getHapus();
                 break;
             case 0:
-                app.isExit();
+                app.isExit(pilihan);
                 break;
             default:
                 System.out.println("Pilihan tidak valid.");
                 break;
         }
-        return false;
     }
 
     public void listBarang() {
