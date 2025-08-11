@@ -1,24 +1,18 @@
 package model;
 
-public class Barang {
+public abstract class Barang {
     String id;
-    String nama;
     int jumlah;
     double harga;
 
-    public Barang(String id, String nama, int jumlah, double harga) {
+    public Barang(String id, int jumlah, double harga) {
         this.id = id;
-        this.nama = nama;
         this.jumlah = jumlah;
         this.harga = harga;
     }
 
     public String getId() {
         return id;
-    }
-    
-    public String getNama() {
-        return nama;
     }
 
     public int getJumlah() {
@@ -33,10 +27,6 @@ public class Barang {
         this.id = id;
     }
 
-    public void setNama(String nama) {
-        this.nama = nama;
-    }
-
     public void setJumlah(int jumlah) {
         this.jumlah = jumlah;
     }
@@ -45,12 +35,13 @@ public class Barang {
         this.harga = harga;
     }
 
+    public abstract String getKategori();
+    
     @Override
     public String toString() {
-        return id + "|" +
-               nama + "|" +
-               jumlah + "|" +
-               harga + "|";
-    } 
+        return id + " | " +
+               jumlah + " | " +
+               harga;
+    }
 
 }

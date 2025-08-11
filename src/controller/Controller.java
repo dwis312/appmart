@@ -64,10 +64,10 @@ public class Controller {
            int jumlah = view.getJumlah();
            double harga = view.getHarga();
             
-           service.tambahData(nama, jumlah, harga);
-           view.displayMsg("Data berhasil ditambah.");
+           Barang barang = service.tambahData(nama, jumlah, harga);
+           view.displayMsg("Data ID: [ " + barang.getId() + " ] berhasil ditambah.");
         } catch (IllegalArgumentException e) {
-            view.displayMsg("Erorr: " + e.getMessage());
+            view.displayMsg("Error: " + e.getMessage());
         } finally {
             view.backMenu();
         }
@@ -85,6 +85,7 @@ public class Controller {
         
         if (service.cariId(keyword) == null) {
             view.displayMsg("Data tidak ditemukan.");
+            view.backMenu();
             return;
         }
 
@@ -105,9 +106,10 @@ public class Controller {
             String jumlahBaru = view.getFormUpadate("Rubah Jumlah: ");
             String hargaBaru = view.getFormUpadate("Rubah Harga: ");
             
-            service.updateData(id, namaBaru, jumlahBaru, hargaBaru);
+            String pesan = service.updateData(id, namaBaru, jumlahBaru, hargaBaru);
+            view.displayMsg(pesan);
         } catch (IllegalArgumentException e) {
-            view.displayMsg("Erorr: " + e.getMessage());
+            view.displayMsg("Error: " + e.getMessage());
         } finally {
             view.backMenu();
         }
@@ -139,10 +141,7 @@ public class Controller {
 
         view.allBarang(daftarBarang);
 
-        view.displayMsg("\n**Pilih nomor 0 untuk kembali...");
-        view.displayMsg("\nPilih Data yang akan dihapus: ");
-    
-        int indexInput = view.getFormInt("Pilih No: ");
+        int indexInput = view.getFormInt("\n**Pilih nomor 0 untuk kembali...\nPilih Data yang akan dihapus: \nPilih No: ");
 
         if (indexInput == 0) {
             return;
@@ -151,21 +150,17 @@ public class Controller {
         if (indexInput >= 1 && indexInput <= daftarBarang.size()) {
             Barang hapusBarang = daftarBarang.get(indexInput -1);
 
-            view.displayMsg("Hapus Data: ");
-            view.displayMsg(" " + hapusBarang.getId());
-            view.displayMsg(" - " + hapusBarang.getNama());
-            view.displayMsg(" ");
+            view.displayMsg("Hapus Data: " + hapusBarang.getId() + " - " + hapusBarang.getNama());
 
-            view.displayMsg("Yakin hapus ?");
-            view.displayMsg("1. Ya, Hapus data.");
-            view.displayMsg("2. Batalkan.");
-            int konfirm = view.getFormInt("Pilih: ");
+            int konfirm = view.getFormInt("\nYakin hapus ?\n1. Ya hapus\n2. Batal\nPilih: ");
 
             if (konfirm == 1) {
-                view.displayMsg("Hapus data berhasil");
-                service.hapusData(hapusBarang.getId());
+                boolean berhasil = service.hapusData(hapusBarang.getId());
+                if(berhasil) {
+                    view.displayMsg("berhasil dihapus: " + hapusBarang.getId() + " - " + hapusBarang.getNama());
+                }
             } else {
-                view.displayMsg("Batalkan.");
+                view.displayMsg("Dibatalkan.");
             }
         } else {
             view.displayMsg("Pilihan tidak valid.");

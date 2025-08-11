@@ -24,18 +24,20 @@ public class BarangService {
         return new ArrayList<>(daftarBarang);
     }
 
-    public void tambahData(String nama, int jumlah, double harga) {
+    public Barang tambahData(String nama, int jumlah, double harga) {
         String id = generateId();
-        daftarBarang.add(new Barang(id, nama, jumlah, harga));
-        System.out.println("Data ID: [ " + id +" ] berhasil ditambah.");
+        Barang barang = new Barang(id, nama, jumlah, harga);
+        daftarBarang.add(barang);
+        return barang;
     }
 
-    public void updateData(String id, String namaBaru, String jumlahBaru, String hargaBaru) {
+    public String updateData(String id, String namaBaru, String jumlahBaru, String hargaBaru) {
         Barang exBarang = cariId(id);
+        StringBuilder pesan = new StringBuilder();
 
         if (!namaBaru.trim().isEmpty()) {
             exBarang.setNama(namaBaru);
-            System.out.println("Nama berhasil dirubah");
+            pesan.append("\nNama berhasil dirubah");
         }
 
         if (!jumlahBaru.trim().isEmpty()) {
@@ -43,12 +45,12 @@ public class BarangService {
                 int parseJumlah = Integer.parseInt(jumlahBaru);
                 if (parseJumlah > 0) {
                     exBarang.setJumlah(parseJumlah);
-                    System.out.println("Jumlah barang berhasil dirubah");
+                    pesan.append("\nJumlah barang berhasil dirubah");
                 } else {
-                    System.out.println("Angka yang dimasukan tidak valid.");
+                    pesan.append("\nAngka yang dimasukan tidak valid.");
                 }
             } catch (Exception e) {
-                System.out.println("Jumlah barang harus angka");
+                pesan.append("\nJumlah barang harus angka " + e.getMessage());
             }
         }
 
@@ -57,22 +59,25 @@ public class BarangService {
                 double parseHarga = Double.parseDouble(hargaBaru);
                 if (parseHarga > 0) {
                     exBarang.setHarga(parseHarga);;
-                    System.out.println("Harga berhasil diubah.");
+                    pesan.append("\nHarga berhasil diubah.");
                 } else {
-                    System.out.println("Angka yang dimasukan tidak valid.");
+                    pesan.append("\nAngka yang dimasukan tidak valid.");
                 }
             } catch (Exception e) {
-                System.out.println("Harga barang harus angka");
+                pesan.append("\nGagal diperbarui: Harga barang harus angka " + e.getMessage());
             }
         }
+        return pesan.toString().trim();
     }
 
-    public void hapusData(String id) {
+    public boolean hapusData(String id) {
         Barang exBarang = cariId(id);
 
         if(exBarang.getId().equalsIgnoreCase(id)) {
-            System.out.println(exBarang.getId()+ " - " + exBarang.getNama() + " Dihapus.");
             daftarBarang.remove(exBarang);
+            return true;
+        } else {
+            return false;
         }
 
     }
