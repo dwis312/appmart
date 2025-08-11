@@ -24,9 +24,18 @@ public class ConsoleView {
         return input;
     }
 
+    public void backMenu() {
+       Helper.enterToContinue(input);
+    }
+
     public String getKode() {
         System.out.print("\nMasukan kode barang: ");
         return Helper.inputStr(input);
+    }
+
+    public String getFormUpadate(String message) {
+        System.out.print(message);
+        return getInput().nextLine();
     }
 
     public String getFormStr(String message) {
@@ -63,9 +72,13 @@ public class ConsoleView {
         System.out.println(message);
     }
 
-    public void menu() {
+    public void header(String text) {
         Helper.clearScreen();
-        System.out.println("\n=== APP MART ===");
+        System.out.printf("=== %-5s ===\n", text);
+    }
+
+    public void menu() {
+        header("APP MART");
         System.out.println("");
         System.out.println("1. Tambah barang");
         System.out.println("2. Update Data");
@@ -76,7 +89,7 @@ public class ConsoleView {
         System.out.print("Pilih : ");
     }
 
-    public void listBarang() {
+    public void headerTabel() {
         System.out.println("------------------------------------------------------------");
         System.out.printf("| %-2s | %-5s | %-7s | %-7s | %-15s |\n",
         "No",
@@ -88,6 +101,7 @@ public class ConsoleView {
     }
 
     public void dataBarang(String id, String nama, int jumlah, double harga) {
+        headerTabel();
         System.out.printf("| %-2s | %-9s | %-11s | %-7s | %-15s |\n",
         "1",
         id,
@@ -98,6 +112,7 @@ public class ConsoleView {
     }
 
     public void allBarang(List<Barang> daftarBarang) {
+        headerTabel();
         for (int i = 0; i < daftarBarang.size(); i++) {
                 System.out.printf("| %-2s | %-9s | %-11s | %-7s | %-15s |\n",
                                 i+1,

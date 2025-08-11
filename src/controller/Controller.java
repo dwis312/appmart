@@ -1,6 +1,5 @@
 package controller;
 
-import helper.Helper;
 import java.util.List;
 import model.Barang;
 import service.BarangService;
@@ -25,31 +24,21 @@ public class Controller {
             menuPilihan(pilihan);
             exit = isExit(pilihan);
         }
-
-        Helper.clearScreen();
         view.displayMsg("Program Berhenti.");
     }
 
     public void menuPilihan(int pilihan) {
         switch (pilihan) {
             case 1:
-                Helper.clearScreen();
-                view.displayMsg("\n=== Menu Tambah ===");
                 getTambah();
                 break;
             case 2:
-                Helper.clearScreen();
-                view.displayMsg("\n=== Update Data Barang ===");
                 getUpdate();
                 break;
             case 3:
-                Helper.clearScreen();
-                view.displayMsg("\n=== List Daftar Barang ===");
                 getAll();
                 break;
             case 4:
-                Helper.clearScreen();
-                view.displayMsg("\n=== Hapus Data Barang ===");
                 getHapus();
                 break;
             case 0:
@@ -69,6 +58,7 @@ public class Controller {
     }
 
     public void getTambah() {
+        view.header("Tambah Barang");
         try {
            String nama = view.getNama();
            int jumlah = view.getJumlah();
@@ -79,16 +69,15 @@ public class Controller {
         } catch (IllegalArgumentException e) {
             view.displayMsg("Erorr: " + e.getMessage());
         } finally {
-            Helper.enterToContinue(view.getInput());
+            view.backMenu();
         }
-
-
     }
 
     public void getUpdate() {
+        view.header("Update Data Barang");
         if (service.getAllData().isEmpty()) {
             view.displayMsg("Data masih kosong.");
-            Helper.enterToContinue(view.getInput());
+            view.backMenu();
             return;
         }
         
@@ -105,7 +94,6 @@ public class Controller {
 
         view.displayMsg("Data ditemukan: ");
 
-        view.listBarang();
         view.dataBarang(exBarang.getId(), exBarang.getNama(), exBarang.getJumlah(), exBarang.getHarga());
 
         view.displayMsg("");
@@ -113,42 +101,42 @@ public class Controller {
         view.displayMsg("");
         
         try {
-            String namaBaru = view.getFormStr("Ganti Nama: ");
-            String jumlahBaru = view.getFormStr("Rubah Jumlah: ");
-            String hargaBaru = view.getFormStr("Rubah Harga: ");
+            String namaBaru = view.getFormUpadate("Ganti Nama: ");
+            String jumlahBaru = view.getFormUpadate("Rubah Jumlah: ");
+            String hargaBaru = view.getFormUpadate("Rubah Harga: ");
             
             service.updateData(id, namaBaru, jumlahBaru, hargaBaru);
         } catch (IllegalArgumentException e) {
             view.displayMsg("Erorr: " + e.getMessage());
         } finally {
-            Helper.enterToContinue(view.getInput());
+            view.backMenu();
         }
 
     }
 
     public void getAll() {
+        view.header("List Daftar Barang");
         List<Barang> daftarBarang = service.getAllData();
         if (daftarBarang.isEmpty()) {
             view.displayMsg("Data masih kosong.");
         } else {
-            view.listBarang();
             view.allBarang(daftarBarang);
         }
 
-        Helper.enterToContinue(view.getInput());
+        view.backMenu();
 
     }
 
     public void getHapus() {
+        view.header("Hapus Data Barang");
         List<Barang> daftarBarang = service.getAllData();
 
         if (daftarBarang.isEmpty()) {
             view.displayMsg("Data masih kosong.");
-            Helper.enterToContinue(view.getInput());
+            view.backMenu();
             return;
         }
 
-        view.listBarang();
         view.allBarang(daftarBarang);
 
         view.displayMsg("\n**Pilih nomor 0 untuk kembali...");
@@ -182,7 +170,7 @@ public class Controller {
         } else {
             view.displayMsg("Pilihan tidak valid.");
         }
-        Helper.enterToContinue(view.getInput());
+        view.backMenu();
 
     }
 
