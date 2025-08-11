@@ -2,6 +2,8 @@ package controller;
 
 import java.util.List;
 import model.Barang;
+import model.Elektronik;
+import model.JenisElektronik;
 import service.BarangService;
 import view.ConsoleView;
 
@@ -21,13 +23,13 @@ public class Controller {
         while (!exit) {
             view.menu();
             pilihan = view.getInputInt();
-            menuPilihan(pilihan);
-            exit = isExit(pilihan);
+            exit = menuPilihan(pilihan);;
         }
         view.displayMsg("Program Berhenti.");
     }
 
-    public void menuPilihan(int pilihan) {
+    public boolean  menuPilihan(int pilihan) {
+        boolean ex = false;
         switch (pilihan) {
             case 1:
                 getTambah();
@@ -42,30 +44,28 @@ public class Controller {
                 getHapus();
                 break;
             case 0:
-                break;
+                return ex = true;
             default:
                 view.displayMsg("Pilihan tidak valid.");
                 break;
         }
-    }
 
-    public boolean isExit(int num) {
-        if(num == 0) {
-            return exit = true;
-        } else {
-            return false;
-        }
+        return ex;
     }
 
     public void getTambah() {
         view.header("Tambah Barang");
         try {
-           String nama = view.getNama();
-           int jumlah = view.getJumlah();
-           double harga = view.getHarga();
+            int jumlah = view.getJumlah();
+            double harga = view.getHarga();
+            String id = service.generateId();
+            String merk = view.getMerk();
+            JenisElektronik jenis = view.getJenisElektronik();
             
-           Barang barang = service.tambahData(nama, jumlah, harga);
-           view.displayMsg("Data ID: [ " + barang.getId() + " ] berhasil ditambah.");
+           Elektronik newElektronik = new Elektronik(id, jumlah, harga, merk, jenis);
+           service.tambahData(newElektronik);
+
+           view.displayMsg("Data ID: [ " + newElektronik.getId() + " ] berhasil ditambah.");
         } catch (IllegalArgumentException e) {
             view.displayMsg("Error: " + e.getMessage());
         } finally {
@@ -91,22 +91,21 @@ public class Controller {
 
 
         Barang exBarang = service.cariId(keyword);
-        String id = exBarang.getId();
+        Elektronik elektronik = (Elektronik) exBarang;
+        String id = elektronik.getId();
 
         view.displayMsg("Data ditemukan: ");
-
-        view.dataBarang(exBarang.getId(), exBarang.getNama(), exBarang.getJumlah(), exBarang.getHarga());
+        view.dataBarang(elektronik.getId(), elektronik.getJumlah(), elektronik.getHarga(), elektronik.getMerk(), elektronik.getKategori());
 
         view.displayMsg("");
         view.displayMsg("**Biarkan kosong jika tidak ingin mengubah.");
         view.displayMsg("");
         
         try {
-            String namaBaru = view.getFormUpadate("Ganti Nama: ");
             String jumlahBaru = view.getFormUpadate("Rubah Jumlah: ");
             String hargaBaru = view.getFormUpadate("Rubah Harga: ");
             
-            String pesan = service.updateData(id, namaBaru, jumlahBaru, hargaBaru);
+            String pesan = service.updateData(id, jumlahBaru, hargaBaru);
             view.displayMsg(pesan);
         } catch (IllegalArgumentException e) {
             view.displayMsg("Error: " + e.getMessage());
@@ -150,14 +149,14 @@ public class Controller {
         if (indexInput >= 1 && indexInput <= daftarBarang.size()) {
             Barang hapusBarang = daftarBarang.get(indexInput -1);
 
-            view.displayMsg("Hapus Data: " + hapusBarang.getId() + " - " + hapusBarang.getNama());
+            view.displayMsg("Hapus Data: " + hapusBarang.getId());
 
             int konfirm = view.getFormInt("\nYakin hapus ?\n1. Ya hapus\n2. Batal\nPilih: ");
 
             if (konfirm == 1) {
                 boolean berhasil = service.hapusData(hapusBarang.getId());
                 if(berhasil) {
-                    view.displayMsg("berhasil dihapus: " + hapusBarang.getId() + " - " + hapusBarang.getNama());
+                    view.displayMsg("berhasil dihapus: " + hapusBarang.getId());
                 }
             } else {
                 view.displayMsg("Dibatalkan.");

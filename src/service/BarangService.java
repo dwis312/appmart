@@ -7,7 +7,7 @@ import model.Barang;
 public class BarangService {
     private ArrayList<Barang> daftarBarang = new ArrayList<>();
 
-    private String generateId() {
+    public String generateId() {
         return "B" + String.format("%03d", daftarBarang.size()+1);
     }
 
@@ -21,24 +21,16 @@ public class BarangService {
     }
 
     public List<Barang> getAllData() {
-        return new ArrayList<>(daftarBarang);
+        return daftarBarang;
     }
 
-    public Barang tambahData(String nama, int jumlah, double harga) {
-        String id = generateId();
-        Barang barang = new Barang(id, nama, jumlah, harga);
+    public void tambahData(Barang barang) {
         daftarBarang.add(barang);
-        return barang;
     }
 
-    public String updateData(String id, String namaBaru, String jumlahBaru, String hargaBaru) {
+    public String updateData(String id, String jumlahBaru, String hargaBaru) {
         Barang exBarang = cariId(id);
         StringBuilder pesan = new StringBuilder();
-
-        if (!namaBaru.trim().isEmpty()) {
-            exBarang.setNama(namaBaru);
-            pesan.append("\nNama berhasil dirubah");
-        }
 
         if (!jumlahBaru.trim().isEmpty()) {
             try {
@@ -73,7 +65,7 @@ public class BarangService {
     public boolean hapusData(String id) {
         Barang exBarang = cariId(id);
 
-        if(exBarang.getId().equalsIgnoreCase(id)) {
+        if(exBarang != null) {
             daftarBarang.remove(exBarang);
             return true;
         } else {
