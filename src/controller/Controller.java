@@ -72,9 +72,9 @@ public class Controller {
 
     public void getTambah() {
         view.menuTambah();
-        int pilihan = view.getFormInt("Pilih: ");
+        int pilihanAdd = view.getFormInt("Pilih: ");
 
-        switch (pilihan) {
+        switch (pilihanAdd) {
             case 1:
                 tambahElektronik();
                 break;

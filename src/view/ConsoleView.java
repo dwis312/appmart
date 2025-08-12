@@ -153,15 +153,15 @@ public class ConsoleView {
     }
 
     public void headerTabel() {
-        System.out.println("------------------------------------------------------------");
-        System.out.printf("| %-2s | %-5s | %-7s | %-7s | %-5s | %-15s |\n",
+        System.out.println("================================================================================");
+        System.out.printf("| %-2s | %-5s | %-7s | %-20s | %-7s | %-20s |\n",
         "No",
         "ID",
         "Merk",
         "Kategori",
         "Jumlah",
         "Harga");
-        System.out.println("------------------------------------------------------------");
+        System.out.println("--------------------------------------------------------------------------------");
     }
 
     public void allBarang(List<Barang> daftarBarang) {
@@ -169,26 +169,27 @@ public class ConsoleView {
         for (int i = 0; i < daftarBarang.size(); i++) {
             Barang barang = daftarBarang.get(i);
 
-            System.out.printf("| %-2s | %-5s | %-7s | %-7s | %-5s | %-15s |\n",
+            System.out.printf("| %-2s | %-5s | %-7s | %-20s | %-7s | %-20s |\n",
+                                i+1,
                                 barang.getId(),
                                 barang.getMerk(),
                                 barang.getKategori(),
                                 barang.getJumlah(),
                                 formatRupiah.format(barang.getHarga()));
         }
-        System.out.println("------------------------------------------------------------");
+        System.out.println("================================================================================");
     }
 
     public void dataBarang(String id, int jumlah, double harga, String merk, String jenis) {
         headerTabel();
-        System.out.printf("| %-2s | %-5s | %-7s | %-7s | %-5s | %-15s |\n",
+        System.out.printf("| %-2s | %-5s | %-7s | %-20s | %-7s | %-20s |\n",
                         "1",
                         id,
-                        jenis,
                         merk,
+                        jenis,
                         jumlah,
                         formatRupiah.format(harga));
-        System.out.println("------------------------------------------------------------");
+        System.out.println("================================================================================");
     }
 
     public void menuTambah() {

@@ -10,7 +10,7 @@ public class Elektronik extends Barang implements Kategori {
 
     @Override
     public String getKategori() {
-        return "Elektronik" + jenis.getDeskripsi();
+        return "Elektronik - " + jenis.getDeskripsi();
     }
 
     @Override

@@ -12,7 +12,7 @@ public class Pakaian extends Barang implements Kategori {
 
     @Override
     public String getKategori() {
-        return "Pakaian" + jenis.getDeskripsi();
+        return "Pakaian - " + jenis.getDeskripsi();
     }
 
     @Override
