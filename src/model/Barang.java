@@ -1,18 +1,24 @@
 package model;
 
 public abstract class Barang {
-    String id;
-    int jumlah;
-    double harga;
+    private String id;
+    private String merk;
+    private int jumlah;
+    private double harga;
 
-    public Barang(String id, int jumlah, double harga) {
+    public Barang(String id, String merk, int jumlah, double harga) {
         this.id = id;
+        this.merk = merk;
         this.jumlah = jumlah;
         this.harga = harga;
     }
 
     public String getId() {
         return id;
+    }
+
+    public String getMerk() {
+        return merk;
     }
 
     public int getJumlah() {
@@ -25,6 +31,10 @@ public abstract class Barang {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setMerk(String merk) {
+        this.merk = merk;
     }
 
     public void setJumlah(int jumlah) {

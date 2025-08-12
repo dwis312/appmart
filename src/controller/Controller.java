@@ -4,6 +4,9 @@ import java.util.List;
 import model.Barang;
 import model.Elektronik;
 import model.JenisElektronik;
+import model.JenisPakaian;
+import model.JenisSize;
+import model.Pakaian;
 import service.BarangService;
 import view.ConsoleView;
 
@@ -20,6 +23,7 @@ public class Controller {
     }
 
     public void run() {
+        getLoad();
         while (!exit) {
             view.menu();
             pilihan = view.getInputInt();
@@ -32,13 +36,13 @@ public class Controller {
         boolean ex = false;
         switch (pilihan) {
             case 1:
-                getTambah();
+                getAll();
                 break;
             case 2:
-                getUpdate();
+                getTambah();
                 break;
             case 3:
-                getAll();
+                getUpdate();
                 break;
             case 4:
                 getHapus();
@@ -53,23 +57,74 @@ public class Controller {
         return ex;
     }
 
+    public void getAll() {
+        view.header("List Daftar Barang");
+        List<Barang> daftarBarang = service.getAllData();
+        if (daftarBarang.isEmpty()) {
+            view.displayMsg("\nData masih kosong.");
+        } else {
+            view.allBarang(daftarBarang);
+        }
+
+        view.backMenu();
+
+    }
+
     public void getTambah() {
-        view.header("Tambah Barang");
+        view.menuTambah();
+        int pilihan = view.getFormInt("Pilih: ");
+
+        switch (pilihan) {
+            case 1:
+                tambahElektronik();
+                break;
+            case 2:
+                tambahPakaian();
+                break;
+            case 0:
+                return;
+            default:
+                view.displayMsg("Pilihan tidak valid.");
+                break;
+        }
+        view.backMenu();
+    }
+    
+    public void tambahElektronik() {
+        view.header("Elektronik");
         try {
+            String merk = view.getMerk();
             int jumlah = view.getJumlah();
             double harga = view.getHarga();
-            String id = service.generateId();
-            String merk = view.getMerk();
             JenisElektronik jenis = view.getJenisElektronik();
-            
-           Elektronik newElektronik = new Elektronik(id, jumlah, harga, merk, jenis);
-           service.tambahData(newElektronik);
+            String id = service.generateId();
 
-           view.displayMsg("Data ID: [ " + newElektronik.getId() + " ] berhasil ditambah.");
+            Elektronik newElektronik = new Elektronik(id, merk, jumlah, harga, jenis);
+            service.tambahData(newElektronik);
+
+            view.displayMsg("Data ID: [ " + newElektronik.getId() + " ] berhasil ditambah.");
+        } catch (IllegalArgumentException e) {
+            view.displayMsg("Error: "+ e.getMessage());
+        }
+    }
+
+    public void tambahPakaian() {
+        view.header("Pakaian");
+
+        try {
+            String merk = view.getMerk();
+            int jumlah = view.getJumlah();
+            double harga = view.getHarga();
+            JenisSize size = view.getJenisSize();
+            JenisPakaian jenis = view.getJenisPakaian();
+            String id = service.generateId();
+
+            Pakaian newPakaian = new Pakaian(id, merk, jumlah, harga, size, jenis);
+            service.tambahData(newPakaian);
+
+            view.displayMsg("Data ID: [ " + newPakaian.getId() + " ] berhasil ditambah.");
         } catch (IllegalArgumentException e) {
             view.displayMsg("Error: " + e.getMessage());
-        } finally {
-            view.backMenu();
         }
     }
 
@@ -82,49 +137,32 @@ public class Controller {
         }
         
         String keyword = view.getKode();
-        
-        if (service.cariId(keyword) == null) {
-            view.displayMsg("Data tidak ditemukan.");
-            view.backMenu();
-            return;
-        }
-
-
         Barang exBarang = service.cariId(keyword);
-        Elektronik elektronik = (Elektronik) exBarang;
-        String id = elektronik.getId();
 
-        view.displayMsg("Data ditemukan: ");
-        view.dataBarang(elektronik.getId(), elektronik.getJumlah(), elektronik.getHarga(), elektronik.getMerk(), elektronik.getKategori());
+        if (exBarang instanceof Elektronik) {
+            Elektronik elektronik = (Elektronik) exBarang;
+            view.dataBarang(elektronik.getId(), elektronik.getJumlah(), elektronik.getHarga(), elektronik.getMerk(), elektronik.getKategori());
+        } else if (exBarang instanceof Pakaian) {
+            Pakaian pakaian = (Pakaian) exBarang;
+            view.dataBarang(pakaian.getId(), pakaian.getJumlah(), pakaian.getHarga(), pakaian.getMerk(), pakaian.getKategori());
+        }
 
         view.displayMsg("");
         view.displayMsg("**Biarkan kosong jika tidak ingin mengubah.");
         view.displayMsg("");
         
         try {
+            String merkBaru = view.getFormUpadate("Rubah Merk: ");
             String jumlahBaru = view.getFormUpadate("Rubah Jumlah: ");
             String hargaBaru = view.getFormUpadate("Rubah Harga: ");
             
-            String pesan = service.updateData(id, jumlahBaru, hargaBaru);
+            String pesan = service.updateData(exBarang.getId(), merkBaru, jumlahBaru, hargaBaru);
             view.displayMsg(pesan);
         } catch (IllegalArgumentException e) {
             view.displayMsg("Error: " + e.getMessage());
         } finally {
             view.backMenu();
         }
-
-    }
-
-    public void getAll() {
-        view.header("List Daftar Barang");
-        List<Barang> daftarBarang = service.getAllData();
-        if (daftarBarang.isEmpty()) {
-            view.displayMsg("Data masih kosong.");
-        } else {
-            view.allBarang(daftarBarang);
-        }
-
-        view.backMenu();
 
     }
 
@@ -168,8 +206,17 @@ public class Controller {
 
     }
 
-    public void getLoad() {
+    private void getLoad() {
+        String[] pesan = new String[2];
+        pesan[0] = service.bacaData("data/elektronik.txt");
+        pesan[1] = service.bacaData("data/pakaian.txt");
+        
+        for (int i = 0; i < pesan.length; i++) {
+            view.displayMsg(pesan[i]);
+        }
 
+        service.tambahElektronik(service.ggetAllElektronik());
+        service.tambahPakaian(service.getAllPakaian());
     }
 
 }

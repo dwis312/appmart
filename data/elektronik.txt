@@ -1,0 +1,3 @@
+EL001|Tosiba|5|1500000|Laptop
+EL002|Samsung|5|200000|Laptop
+EL003|Sony|5|2500000|Laptop

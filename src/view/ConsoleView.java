@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 import model.Barang;
-import model.Elektronik;
 import model.JenisElektronik;
+import model.JenisPakaian;
+import model.JenisSize;
 
 public class ConsoleView {
     private final Scanner input;
@@ -70,6 +71,46 @@ public class ConsoleView {
         }
     }
 
+    public JenisPakaian getJenisPakaian() {
+        header("Pilih Jenis Pakaian");
+        int i = 1;
+
+        for (JenisPakaian jenis : JenisPakaian.values()) {
+            System.out.println(i++ +". " + jenis.getDeskripsi());
+        }
+
+        int pilihan = -1;
+        while (true) {
+            pilihan = getFormInt("Pilih: ");
+
+            if (pilihan >= 1 && pilihan <= JenisPakaian.values().length) {
+                return JenisPakaian.values()[pilihan - 1];
+            } else {
+                System.out.println("Pilihan tidak valid");
+            }
+        }
+    }
+
+    public JenisSize getJenisSize() {
+        header("Pilih Ukuran");
+        int i = 1;
+
+        for (JenisSize jenis : JenisSize.values()) {
+            System.out.println(i++ +". " + jenis.getDeskripsi());
+        }
+
+        int pilihan = -1;
+        while (true) {
+            pilihan = getFormInt("Pilih: ");
+
+            if (pilihan >= 1 && pilihan <= JenisSize.values().length) {
+                return JenisSize.values()[pilihan - 1];
+            } else {
+                System.out.println("Pilihan tidak valid");
+            }
+        }
+    }
+
     public String getFormUpadate(String message) {
         System.out.print(message);
         return getInput().nextLine();
@@ -102,9 +143,9 @@ public class ConsoleView {
     public void menu() {
         header("APP MART");
         System.out.println("");
-        System.out.println("1. Tambah barang");
-        System.out.println("2. Update Data");
-        System.out.println("3. List barang");
+        System.out.println("1. Daftar barang");
+        System.out.println("2. Tambah barang");
+        System.out.println("3. Update Data");
         System.out.println("4. Hapus barang");
         System.out.println("0. Keluar");
         System.out.println("----------------");
@@ -115,9 +156,9 @@ public class ConsoleView {
         System.out.println("------------------------------------------------------------");
         System.out.printf("| %-2s | %-5s | %-7s | %-7s | %-5s | %-15s |\n",
         "No",
-        "ID Barang",
-        "Kategori",
+        "ID",
         "Merk",
+        "Kategori",
         "Jumlah",
         "Harga");
         System.out.println("------------------------------------------------------------");
@@ -127,17 +168,13 @@ public class ConsoleView {
         headerTabel();
         for (int i = 0; i < daftarBarang.size(); i++) {
             Barang barang = daftarBarang.get(i);
-            if(barang instanceof Elektronik) {
-                Elektronik elektronik = (Elektronik) barang;
 
-                System.out.printf("| %-2s | %-5s | %-7s | %-7s | %-5s | %-15s |\n",
-                                i+1,
-                                elektronik.getId(),
-                                elektronik.getKategori(),
-                                elektronik.getMerk(),
-                                elektronik.getJumlah(),
-                                formatRupiah.format(elektronik.getHarga()));
-            }
+            System.out.printf("| %-2s | %-5s | %-7s | %-7s | %-5s | %-15s |\n",
+                                barang.getId(),
+                                barang.getMerk(),
+                                barang.getKategori(),
+                                barang.getJumlah(),
+                                formatRupiah.format(barang.getHarga()));
         }
         System.out.println("------------------------------------------------------------");
     }
@@ -152,6 +189,14 @@ public class ConsoleView {
                         jumlah,
                         formatRupiah.format(harga));
         System.out.println("------------------------------------------------------------");
+    }
+
+    public void menuTambah() {
+        header("Tambah Barang");
+        System.out.println("1. Tambah Elektronik");
+        System.out.println("2. Tambah Pakaian");
+        System.out.println("0. Kembali");
+        System.out.println("----------------");
     }
 
 }
