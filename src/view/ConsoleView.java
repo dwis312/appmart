@@ -23,11 +23,12 @@ public class ConsoleView {
         return pilihan;
     }
     
-    public Scanner getInput() {
-        return input;
+    public String getFormPolos(String message) {
+        System.out.print(message);
+        return input.nextLine();
     }
 
-    public void backMenu() {
+    public void enterToContinue() {
        Helper.enterToContinue(input);
     }
 
@@ -113,7 +114,7 @@ public class ConsoleView {
 
     public String getFormUpadate(String message) {
         System.out.print(message);
-        return getInput().nextLine();
+        return input.nextLine();
     }
 
     public String getFormStr(String message) {
@@ -144,40 +145,40 @@ public class ConsoleView {
         header("APP MART");
         System.out.println("");
         System.out.println("1. Daftar barang");
-        System.out.println("2. Tambah barang");
-        System.out.println("3. Update Data");
-        System.out.println("4. Hapus barang");
         System.out.println("0. Keluar");
         System.out.println("----------------");
         System.out.print("Pilih : ");
     }
 
     public void headerTabel() {
-        System.out.println("================================================================================");
-        System.out.printf("| %-2s | %-5s | %-7s | %-20s | %-7s | %-20s |\n",
+        System.out.println("\n===========================================================================================");
+        System.out.printf("| %-5s | %-5s | %-10s | %-25s | %-7s | %-20s |\n",
         "No",
         "ID",
         "Merk",
         "Kategori",
         "Jumlah",
         "Harga");
-        System.out.println("--------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------------------------------");
     }
 
-    public void allBarang(List<Barang> daftarBarang) {
+    public void allBarang(List<Barang> daftarBarang, int halamanIni, int totalHalaman) {
         headerTabel();
         for (int i = 0; i < daftarBarang.size(); i++) {
             Barang barang = daftarBarang.get(i);
 
-            System.out.printf("| %-2s | %-5s | %-7s | %-20s | %-7s | %-20s |\n",
-                                i+1,
+            int noUrut = (halamanIni - 1) * 10 + i + 1;
+
+            System.out.printf("| %-5s | %-5s | %-10s | %-25s | %-7s | %-20s |\n",
+                                noUrut,
                                 barang.getId(),
                                 barang.getMerk(),
                                 barang.getKategori(),
                                 barang.getJumlah(),
                                 formatRupiah.format(barang.getHarga()));
         }
-        System.out.println("================================================================================");
+        System.out.println("===========================================================================================");
+        System.out.printf("Halaman %d dari %d\n", halamanIni, totalHalaman);
     }
 
     public void dataBarang(String id, int jumlah, double harga, String merk, String jenis) {
@@ -198,6 +199,18 @@ public class ConsoleView {
         System.out.println("2. Tambah Pakaian");
         System.out.println("0. Kembali");
         System.out.println("----------------");
+    }
+
+    public int getPilihPage() {
+        System.out.println();
+        System.out.println("1. Selanjutnya");
+        System.out.println("2. Sebelumnya");
+        System.out.println("3. Tambah Barang");
+        System.out.println("4. Hapus Barang");
+        System.out.println("5. Update Barang");
+        System.out.println("0. Kembali ke Menu Utama");
+        System.out.print("Pilih: ");
+        return  Helper.inputInt(input);
     }
 
 }

@@ -60,13 +60,72 @@ public class Controller {
     public void getAll() {
         view.header("List Daftar Barang");
         List<Barang> daftarBarang = service.getAllData();
+
         if (daftarBarang.isEmpty()) {
             view.displayMsg("\nData masih kosong.");
-        } else {
-            view.allBarang(daftarBarang);
+            view.enterToContinue();
+            return;
         }
 
-        view.backMenu();
+        int itemPage = 10;
+        int totalItem = daftarBarang.size();
+        int totalHalaman = (int) Math.ceil((double) totalItem / itemPage);
+        int halamanIni = 1;
+
+        boolean ulang = true;
+
+        while (ulang) {
+            String header = "Daftar Barang";
+            int startIndex = (halamanIni - 1) * itemPage;
+            // int endIndex = startIndex + (totalHalaman - itemPage);
+            int endIndex = Math.min(startIndex + itemPage, totalItem);
+
+            List<Barang> subList = daftarBarang.subList(startIndex, endIndex);
+            
+            view.header(header);
+            view.allBarang(subList, halamanIni, totalHalaman);
+
+
+            int pilihHalaman = view.getPilihPage();
+
+            switch (pilihHalaman) {
+                case 1:
+                    if (halamanIni < totalHalaman) {
+                        halamanIni++;
+                    } else {
+                        view.displayMsg("ini adalah halaman terakhir.");
+                        view.enterToContinue();
+                    }
+
+                    break;
+                case 2:
+                    if (halamanIni > 1) {
+                        halamanIni--;
+                    } else {
+                        view.displayMsg("ini adalah halaman pertama.");
+                        view.enterToContinue();
+                    }
+                    
+                    break;
+                case 3:
+                    getTambah();
+                    break;
+                case 4:
+                    getHapus();
+                    break;
+                case 5:
+                    getUpdate2();
+                    break;
+                case 0:
+                    ulang = false;
+                    break;
+                default:
+                    view.displayMsg("Pilihan tidak valid");
+                    view.enterToContinue();
+                    break;
+            }
+        }
+
 
     }
 
@@ -87,7 +146,7 @@ public class Controller {
                 view.displayMsg("Pilihan tidak valid.");
                 break;
         }
-        view.backMenu();
+        view.enterToContinue();
     }
     
     public void tambahElektronik() {
@@ -132,7 +191,7 @@ public class Controller {
         view.header("Update Data Barang");
         if (service.getAllData().isEmpty()) {
             view.displayMsg("Data masih kosong.");
-            view.backMenu();
+            view.enterToContinue();
             return;
         }
         
@@ -161,7 +220,7 @@ public class Controller {
         } catch (IllegalArgumentException e) {
             view.displayMsg("Error: " + e.getMessage());
         } finally {
-            view.backMenu();
+            view.enterToContinue();
         }
 
     }
@@ -171,38 +230,173 @@ public class Controller {
         List<Barang> daftarBarang = service.getAllData();
 
         if (daftarBarang.isEmpty()) {
-            view.displayMsg("Data masih kosong.");
-            view.backMenu();
+            view.displayMsg("\nData masih kosong.");
+            view.enterToContinue();
             return;
         }
 
-        view.allBarang(daftarBarang);
+        int itemPage = 10;
+        int totalItem = daftarBarang.size();
+        int totalHalaman = (int) Math.ceil((double) totalItem / itemPage);
+        int halamanIni = 1;
 
-        int indexInput = view.getFormInt("\n**Pilih nomor 0 untuk kembali...\nPilih Data yang akan dihapus: \nPilih No: ");
+        boolean ulang = true;
 
-        if (indexInput == 0) {
-            return;
-        }
+        while (ulang) {
+            String header = "Hapus Barang";
+            int startIndex = (halamanIni - 1) * itemPage;
+            int endIndex = Math.min(startIndex + itemPage, totalItem);
 
-        if (indexInput >= 1 && indexInput <= daftarBarang.size()) {
-            Barang hapusBarang = daftarBarang.get(indexInput -1);
+            List<Barang> subList = daftarBarang.subList(startIndex, endIndex);
+            
+            view.header(header);
+            view.allBarang(subList, halamanIni, totalHalaman);
+            
+            view.displayMsg("\nKetik (N) Selanjutnya");
+            view.displayMsg("Ketik (P) Sebelumnya");
+            view.displayMsg("Ketik enter untuk kembali");
+            view.displayMsg("Pilih nomor (" + (startIndex +1)+ " - " + endIndex + ") yang inggin dihapus");
+            
+            int nomor = -1;
+            try {
+                String indexInput = view.getFormPolos("\n**Pilihan anda : ");
+                
+                if(indexInput.equalsIgnoreCase("n")) {
+                    if (halamanIni < totalHalaman) {
+                            halamanIni++;
+                    } else {
+                        view.displayMsg("ini adalah halaman terakhir.");
+                        view.enterToContinue();
+                    }
+                } else if (indexInput.equalsIgnoreCase("p")) {
+                    if (halamanIni > 1) {
+                            halamanIni--;
+                    } else {
+                        view.displayMsg("ini adalah halaman pertama.");
+                        view.enterToContinue();
+                    }
+                } else if (indexInput.trim().isEmpty()) {
+                    return;
+                } else {
+                    nomor = Integer.parseInt(indexInput);
 
-            view.displayMsg("Hapus Data: " + hapusBarang.getId());
+                    if (nomor >= 1 && nomor <= daftarBarang.size()) {
+                         Barang hapusBarang = daftarBarang.get(nomor -1);
 
-            int konfirm = view.getFormInt("\nYakin hapus ?\n1. Ya hapus\n2. Batal\nPilih: ");
+                         view.displayMsg("Hapus Data: " + hapusBarang.getId());
+                         int konfirm = view.getFormInt("\nYakin hapus ?\n1. Ya hapus\n2. Batal\nPilih: ");
 
-            if (konfirm == 1) {
-                boolean berhasil = service.hapusData(hapusBarang.getId());
-                if(berhasil) {
-                    view.displayMsg("berhasil dihapus: " + hapusBarang.getId());
+                         if (konfirm == 1) {
+                                boolean berhasil = service.hapusData(hapusBarang.getId());
+                                if(berhasil) {
+                                    view.displayMsg("berhasil dihapus: " + hapusBarang.getId());
+                                    view.enterToContinue();
+                                }
+                            } else {
+                                view.displayMsg("Dibatalkan.");
+                            }
+                    } else {
+                        view.displayMsg("Pilihan tidak valid.");
+                    }
                 }
-            } else {
-                view.displayMsg("Dibatalkan.");
+            } catch (Exception e) {
+                view.displayMsg("Terjadi kesalahan: " + e.getMessage());
             }
-        } else {
-            view.displayMsg("Pilihan tidak valid.");
         }
-        view.backMenu();
+        view.enterToContinue();
+    }
+
+    public void getUpdate2() {
+        view.header("Update Data Barang");
+        List<Barang> daftarBarang = service.getAllData();
+
+        if (daftarBarang.isEmpty()) {
+            view.displayMsg("\nData masih kosong.");
+            view.enterToContinue();
+            return;
+        }
+
+        int itemPage = 10;
+        int totalItem = daftarBarang.size();
+        int totalHalaman = (int) Math.ceil((double) totalItem / itemPage);
+        int halamanIni = 1;
+
+        boolean ulang = true;
+
+        while (ulang) {
+            String header = "Update Data Barang";
+            int startIndex = (halamanIni - 1) * itemPage;
+            int endIndex = Math.min(startIndex + itemPage, totalItem);
+
+            List<Barang> subList = daftarBarang.subList(startIndex, endIndex);
+            
+            view.header(header);
+            view.allBarang(subList, halamanIni, totalHalaman);
+            
+            view.displayMsg("\nKetik (N) Selanjutnya");
+            view.displayMsg("Ketik (P) Sebelumnya");
+            view.displayMsg("Ketik enter untuk kembali");
+            view.displayMsg("Pilih nomor (" + (startIndex +1)+ " - " + endIndex + ") data yang ingin dirubah");
+            
+            int nomor = -1;
+            try {
+                String indexInput = view.getFormPolos("\n**Pilihan anda : ");
+                
+                if(indexInput.equalsIgnoreCase("n")) {
+                    if (halamanIni < totalHalaman) {
+                            halamanIni++;
+                    } else {
+                        view.displayMsg("ini adalah halaman terakhir.");
+                        view.enterToContinue();
+                    }
+                } else if (indexInput.equalsIgnoreCase("p")) {
+                    if (halamanIni > 1) {
+                            halamanIni--;
+                    } else {
+                        view.displayMsg("ini adalah halaman pertama.");
+                        view.enterToContinue();
+                    }
+                } else if (indexInput.trim().isEmpty()) {
+                    return;
+                } else {
+                    nomor = Integer.parseInt(indexInput);
+
+                    if (nomor >= 1 && nomor <= daftarBarang.size()) {
+                         Barang ubahData = daftarBarang.get(nomor -1);
+
+                         view.displayMsg("Rubah Data: " + ubahData.getId());
+                         int konfirm = view.getFormInt("\nYakin dirubah ?\n1. Ya Rubah\n2. Batal\nPilih: ");
+
+                         if (konfirm == 1) {
+                                view.displayMsg("");
+                                view.displayMsg("**Biarkan kosong jika tidak ingin mengubah.");
+                                view.displayMsg("");
+
+                                try {
+                                    String merkBaru = view.getFormUpadate("Rubah Merk: ");
+                                    String jumlahBaru = view.getFormUpadate("Rubah Jumlah: ");
+                                    String hargaBaru = view.getFormUpadate("Rubah Harga: ");
+                                    
+                                    String pesan = service.updateData(ubahData.getId(), merkBaru, jumlahBaru, hargaBaru);
+                                    view.displayMsg(pesan);
+                                } catch (IllegalArgumentException e) {
+                                    view.displayMsg("Error: " + e.getMessage());
+                                } finally {
+                                    view.enterToContinue();
+                                }
+                            } else {
+                                view.displayMsg("Dibatalkan.");
+                            }
+                    } else {
+                        view.displayMsg("Pilihan tidak valid.");
+                    }
+                }
+            } catch (Exception e) {
+                view.displayMsg("Terjadi kesalahan: " + e.getMessage());
+            }
+        }
+        view.enterToContinue();
+        
 
     }
 
