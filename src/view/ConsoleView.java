@@ -227,4 +227,11 @@ public class ConsoleView {
         return  Helper.inputInt(input);
     }
 
+    public String getNavigasi(int startIndex, int endIndex, String header) {
+        displayMsg("\n(N) Selanjutnya | (P) Sebelumnya | enter untuk kembali");
+        displayMsg("Pilih nomor (" + (startIndex +1)+ " - " + endIndex + ") untuk " + header.toLowerCase());
+        System.out.print("\n**Pilihan anda : ");
+        return input.nextLine();
+    }
+
 }

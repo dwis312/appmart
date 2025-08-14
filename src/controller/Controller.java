@@ -257,31 +257,28 @@ public class Controller {
             String[] mods = header.split("\\ ");
             view.allBarang(subList, halamanIni, totalHalaman);
             
-            view.displayMsg("\n(N) Selanjutnya | (P) Sebelumnya | enter untuk kembali");
-            view.displayMsg("Pilih nomor (" + (startIndex +1)+ " - " + endIndex + ") untuk " + header.toLowerCase());
+            String indexInput = view.getNavigasi(startIndex, endIndex, header);
             
-            int nomor = -1;
-            try {
-                String indexInput = view.getFormPolos("\n**Pilihan anda : ");
-                
-                if(indexInput.equalsIgnoreCase("n")) {
-                    if (halamanIni < totalHalaman) {
-                            halamanIni++;
-                    } else {
-                        view.displayMsg("ini adalah halaman terakhir.");
-                        view.enterToContinue();
-                    }
-                } else if (indexInput.equalsIgnoreCase("p")) {
-                    if (halamanIni > 1) {
-                            halamanIni--;
-                    } else {
-                        view.displayMsg("ini adalah halaman pertama.");
-                        view.enterToContinue();
-                    }
-                } else if (indexInput.trim().isEmpty()) {
-                    return;
+            if(indexInput.equalsIgnoreCase("n")) {
+                if (halamanIni < totalHalaman) {
+                        halamanIni++;
                 } else {
-                    nomor = Integer.parseInt(indexInput);
+                    view.displayMsg("ini adalah halaman terakhir.");
+                    view.enterToContinue();
+                }
+            } else if (indexInput.equalsIgnoreCase("p")) {
+                if (halamanIni > 1) {
+                        halamanIni--;
+                } else {
+                    view.displayMsg("ini adalah halaman pertama.");
+                    view.enterToContinue();
+                }
+            } else if (indexInput.trim().isEmpty()) {
+                return;
+            } else {
+                try {
+                    int nomor = Integer.parseInt(indexInput);
+                    
                     if (nomor >= 1 && nomor <= daftarBarang.size()) {
                          if(mods[0].equalsIgnoreCase("Update")) {
                             updateDataBarang(daftarBarang, nomor, header);
@@ -292,10 +289,10 @@ public class Controller {
                         view.displayMsg("Pilihan tidak valid.");
                         view.enterToContinue();
                     }
+                } catch (Exception e) {
+                    view.displayMsg("Terjadi kesalahan: " + e.getMessage());
+                    view.enterToContinue();
                 }
-            } catch (Exception e) {
-                view.displayMsg("Terjadi kesalahan: " + e.getMessage());
-                view.enterToContinue();
             }
         }
     }
