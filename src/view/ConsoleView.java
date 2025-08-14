@@ -138,13 +138,27 @@ public class ConsoleView {
 
     public void header(String text) {
         Helper.clearScreen();
-        System.out.printf("=== %-5s ===\n", text);
+        System.out.printf("\n=====================================  %-5s  =====================================\n", text);
     }
 
     public void menu() {
         header("APP MART");
         System.out.println("");
-        System.out.println("1. Daftar barang");
+        System.out.println("1. Daftar Semua barang");
+        System.out.println("2. Pilih Kategori Barang");
+        System.out.println("0. Keluar");
+        System.out.println("----------------");
+        System.out.print("Pilih : ");
+    }
+
+    public void menuKategori() {
+        header("Pilih Kategori Barang");
+        System.out.println("");
+        System.out.println("1. Handphone");
+        System.out.println("2. Laptop");
+        System.out.println("3. Tv");
+        System.out.println("4. Kaos");
+        System.out.println("5. Baju");
         System.out.println("0. Keluar");
         System.out.println("----------------");
         System.out.print("Pilih : ");
@@ -178,7 +192,7 @@ public class ConsoleView {
                                 formatRupiah.format(barang.getHarga()));
         }
         System.out.println("===========================================================================================");
-        System.out.printf("Halaman %d dari %d\n", halamanIni, totalHalaman);
+        System.out.printf("[ Halaman %d dari %d ]\n", halamanIni, totalHalaman);
     }
 
     public void dataBarang(String id, int jumlah, double harga, String merk, String jenis) {
@@ -195,7 +209,7 @@ public class ConsoleView {
 
     public void menuTambah() {
         header("Tambah Barang");
-        System.out.println("1. Tambah Elektronik");
+        System.out.println("\n1. Tambah Elektronik");
         System.out.println("2. Tambah Pakaian");
         System.out.println("0. Kembali");
         System.out.println("----------------");
@@ -208,7 +222,7 @@ public class ConsoleView {
         System.out.println("3. Tambah Barang");
         System.out.println("4. Hapus Barang");
         System.out.println("5. Update Barang");
-        System.out.println("0. Kembali ke Menu Utama");
+        System.out.println("0. Kembali");
         System.out.print("Pilih: ");
         return  Helper.inputInt(input);
     }
