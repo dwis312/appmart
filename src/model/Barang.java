@@ -3,13 +3,13 @@ package model;
 public abstract class Barang {
     private String id;
     private String merk;
-    private int jumlah;
+    private int stok;
     private double harga;
 
-    public Barang(String id, String merk, int jumlah, double harga) {
+    public Barang(String id, String merk, int stok, double harga) {
         this.id = id;
         this.merk = merk;
-        this.jumlah = jumlah;
+        this.stok = stok;
         this.harga = harga;
     }
 
@@ -21,8 +21,8 @@ public abstract class Barang {
         return merk;
     }
 
-    public int getJumlah() {
-        return jumlah;
+    public int getStok() {
+        return stok;
     }
 
     public double getHarga() {
@@ -37,8 +37,8 @@ public abstract class Barang {
         this.merk = merk;
     }
 
-    public void setJumlah(int jumlah) {
-        this.jumlah = jumlah;
+    public void setStok(int stok) {
+        this.stok = stok;
     }
 
     public void setHarga(double harga) {
@@ -50,7 +50,7 @@ public abstract class Barang {
     @Override
     public String toString() {
         return id + " | " +
-               jumlah + " | " +
+               stok + " | " +
                harga;
     }
 

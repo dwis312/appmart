@@ -34,7 +34,7 @@ public class BarangService {
         return daftarBarang;
     }
 
-    public List<Elektronik> ggetAllElektronik() {
+    public List<Elektronik> getAllElektronik() {
         return elektronik;
     }
 
@@ -54,7 +54,7 @@ public class BarangService {
         daftarBarang.addAll(listElektronik);
     }
 
-    public String updateData(String id, String merkBaru, String jumlahBaru, String hargaBaru) {
+    public String updateData(String id, String merkBaru, String stokBaru, String hargaBaru) {
         Barang exBarang = cariId(id);
         StringBuilder pesan = new StringBuilder();
 
@@ -63,17 +63,17 @@ public class BarangService {
             pesan.append("\nMerk Barang berhasil dirubah.");
         }
 
-        if (!jumlahBaru.trim().isEmpty()) {
+        if (!stokBaru.trim().isEmpty()) {
             try {
-                int parseJumlah = Integer.parseInt(jumlahBaru);
-                if (parseJumlah > 0) {
-                    exBarang.setJumlah(parseJumlah);
-                    pesan.append("\nJumlah barang berhasil dirubah");
+                int parseStok = Integer.parseInt(stokBaru);
+                if (parseStok > 0) {
+                    exBarang.setStok(parseStok);
+                    pesan.append("\nstok barang berhasil dirubah");
                 } else {
                     pesan.append("\nAngka yang dimasukan tidak valid.");
                 }
             } catch (Exception e) {
-                pesan.append("\nJumlah barang harus angka " + e.getMessage());
+                pesan.append("\nstok barang harus angka " + e.getMessage());
             }
         }
 
@@ -93,6 +93,58 @@ public class BarangService {
         return pesan.toString().trim();
     }
 
+    public String updateElektronik(String id, String merkBaru, String stokBaru, String hargaBaru, String modelBaru, JenisElektronik jenisBaru) {
+        Barang exBarang = cariId(id);
+        StringBuilder pesan = new StringBuilder();
+
+        
+        if (exBarang instanceof Elektronik) {
+            Elektronik dataElektronik = (Elektronik) exBarang;
+            
+            pesan.append(updateData(id, merkBaru, stokBaru, hargaBaru));
+            
+            if (!modelBaru.trim().isEmpty()) {
+                dataElektronik.setModel(modelBaru);
+                pesan.append("\nModel Barang berhasil dirubah.");
+            }
+
+            if(jenisBaru != null && !dataElektronik.getJenis().equals(jenisBaru)) {
+                dataElektronik.setJenis(jenisBaru);
+                pesan.append("\nJenis Elektronik berhasil dirubah.");
+            }
+        } else {
+            return "Barang dengan ID " + id + " bukan kategori Elektronik.";
+        }
+
+        return pesan.toString().trim();
+    }
+    
+    public String updatePakaian(String id, String merkBaru, String stokBaru, String hargaBaru, JenisSize sizeBaru, JenisPakaian jenisBaru) {
+        Barang exBarang = cariId(id);
+        StringBuilder pesan = new StringBuilder();
+
+        if (exBarang instanceof Pakaian) {
+            Pakaian dataPakaian = (Pakaian) exBarang;
+
+            pesan.append(updateData(id, merkBaru, stokBaru, hargaBaru));
+
+            if (sizeBaru != null && !dataPakaian.getSize().equals(sizeBaru)) {
+                dataPakaian.setSize(sizeBaru);
+                pesan.append("\nUkuran Pakaian berhasil dirubah.");
+            }
+
+            if (jenisBaru != null && !dataPakaian.getJenis().equals(jenisBaru)) {
+                dataPakaian.setJenis(jenisBaru);
+                pesan.append("\nJenis Pakaian berhasil dirubah.");
+            }
+
+        } else {
+            return "Barang dengan ID " + id + " bukan kategori Pakaian.";
+        }
+
+        return pesan.toString().trim();
+    }
+
     public boolean hapusData(String id) {
         Barang exBarang = cariId(id);
 
@@ -107,36 +159,46 @@ public class BarangService {
 
     public String bacaData(String path) {
         StringBuilder logPesan = new StringBuilder();
+        daftarBarang.clear();
+
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String line;
 
+            logPesan.append("Memulai membaca data dari file...\n");
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("\\|");
-                logPesan.append("Memulai membaca data dari file...\n");
 
-                if (parts.length == 5 && path.contains("elektronik.txt")) {
+                try {
+                    if (path.contains("elektronik.txt")) {
                     String id = parts[0];
                     String merk = parts[1];
-                    int jumlah = Integer.parseInt(parts[2]);
+                    int stok = Integer.parseInt(parts[2]);
                     double harga = Double.parseDouble(parts[3]);
-                    JenisElektronik jenis = JenisElektronik.valueOf(parts[4].toUpperCase());
+                    String model = parts[4];
+                    JenisElektronik jenis = JenisElektronik.valueOf(parts[5].toUpperCase());
 
-                    Elektronik daftarElektronik = new Elektronik(id, merk, jumlah, harga, jenis);
+                    Elektronik daftarElektronik = new Elektronik(id, merk, stok, harga, model, jenis);
                     elektronik.add(daftarElektronik);
                     
-                } else if(parts.length == 6 && path.contains("pakaian.txt")) {
-                    String id = parts[0];
-                    String merk = parts[1];
-                    int jumlah = Integer.parseInt(parts[2]);
-                    double harga = Double.parseDouble(parts[3]);
-                    JenisSize size = JenisSize.valueOf(parts[4].toUpperCase());
-                    JenisPakaian jenis = JenisPakaian.valueOf(parts[5].toUpperCase());
-                    
-                    Pakaian daftarPakaian = new Pakaian(id, merk, jumlah, harga, size, jenis);
-                    pakaian.add(daftarPakaian);
+                    } else if(path.contains("pakaian.txt")) {
+                        String id = parts[0];
+                        String merk = parts[1];
+                        int stok = Integer.parseInt(parts[2]);
+                        double harga = Double.parseDouble(parts[3]);
+                        JenisSize size = JenisSize.valueOf(parts[4].toUpperCase());
+                        JenisPakaian jenis = JenisPakaian.valueOf(parts[5].toUpperCase());
+                        
+                        Pakaian daftarPakaian = new Pakaian(id, merk, stok, harga, size, jenis);
+                        pakaian.add(daftarPakaian);
 
-                } else {
-                    logPesan.append("Warning: Invalid line, skipped: " + line);
+                    } else {
+                        logPesan.append("Warning: Invalid line, skipped: " + line);
+                    }
+                    
+                } catch (NumberFormatException e) {
+                    logPesan.append("Error: Gagal mengonversi angka pada baris: " + line + ". Kesalahan: " + e.getMessage() + "\n");
+                } catch (IllegalArgumentException e) {
+                    logPesan.append("Error: Nilai enum tidak valid pada baris: " + line + ". Kesalahan: " + e.getMessage() + "\n");
                 }
             }
             logPesan.append("Selesai membaca data. Total Elektronik: " + elektronik.size() + ", Total Pakaian: " + pakaian.size());

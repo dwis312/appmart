@@ -36,14 +36,19 @@ public class ConsoleView {
         System.out.print("\nMasukan Merk barang: ");
         return Helper.inputStr(input);
     }
+
+    public String getModel() {
+        System.out.print("\nMasukan Model barang: ");
+        return Helper.inputStr(input);
+    }
     
     public String getKode() {
         System.out.print("\nMasukan kode barang: ");
         return Helper.inputStr(input);
     }
 
-    public int getJumlah() {
-        System.out.print("Jumlah barang: ");
+    public int getStok() {
+        System.out.print("Stok barang: ");
         return Helper.inputInt(input);
     }
 
@@ -138,7 +143,7 @@ public class ConsoleView {
 
     public void header(String text) {
         Helper.clearScreen();
-        System.out.printf("\n=====================================  %-5s  =====================================\n", text);
+        System.out.printf("\n***               %-5s               ***\n", text);
     }
 
     public void menu() {
@@ -164,6 +169,45 @@ public class ConsoleView {
         System.out.print("Pilih : ");
     }
 
+    public void headerDetail(String modelSize) {
+        System.out.println("\n===========================================================================================");
+        System.out.printf("| %-5s | %-5s | %-10s | %-10s | %-10s | %-7s | %-20s |\n",
+        "No",
+        "Id",
+        "Merk",
+        modelSize,
+        "Kategori",
+        "Stok",
+        "Harga");
+        System.out.println("-------------------------------------------------------------------------------------------");
+    }
+
+    public void detailBarangElektronik(String id, String merk, int stok, double harga, String model, JenisElektronik jenis) {
+        headerDetail("Model");
+        System.out.printf("| %-5s | %-5s | %-10s | %-10s | %-10s | %-7s | %-20s |\n",
+        "No",
+        id,
+        merk,
+        model,
+        jenis,
+        stok,
+        formatRupiah.format(harga));
+        System.out.println("===========================================================================================");
+    }
+
+    public void detailBarangPakaian(String id, String merk, int stok, double harga, JenisSize size, JenisPakaian jenis ) {
+        headerDetail("Ukuran");
+        System.out.printf("| %-5s | %-5s | %-10s | %-10s | %-10s | %-7s | %-20s |\n",
+        "No",
+        id,
+        merk,
+        size,
+        jenis,
+        stok,
+        formatRupiah.format(harga));
+        System.out.println("===========================================================================================");
+    }
+
     public void headerTabel() {
         System.out.println("\n===========================================================================================");
         System.out.printf("| %-5s | %-5s | %-10s | %-25s | %-7s | %-20s |\n",
@@ -171,15 +215,27 @@ public class ConsoleView {
         "ID",
         "Merk",
         "Kategori",
-        "Jumlah",
+        "Stok",
         "Harga");
         System.out.println("-------------------------------------------------------------------------------------------");
+    }
+
+    public void headerByKategori() {
+        System.out.println("\n===============================================================");
+        System.out.printf("| %-5s | %-5s | %-10s | %-7s | %-20s |\n",
+        "No",
+        "ID",
+        "Merk",
+        "Stok",
+        "Harga");
+        System.out.println("---------------------------------------------------------------");
     }
 
     public void allBarang(List<Barang> daftarBarang, int halamanIni, int totalHalaman) {
         headerTabel();
         for (int i = 0; i < daftarBarang.size(); i++) {
             Barang barang = daftarBarang.get(i);
+            String[] parts = barang.getKategori().split("\\-");
 
             int noUrut = (halamanIni - 1) * 10 + i + 1;
 
@@ -187,11 +243,28 @@ public class ConsoleView {
                                 noUrut,
                                 barang.getId(),
                                 barang.getMerk(),
-                                barang.getKategori(),
-                                barang.getJumlah(),
+                                parts[1],
+                                barang.getStok(),
                                 formatRupiah.format(barang.getHarga()));
         }
         System.out.println("===========================================================================================");
+        System.out.printf("[ Halaman %d dari %d ]\n", halamanIni, totalHalaman);
+    }
+
+    public void barangByKategori(List<Barang> daftarBarang, int halamanIni, int totalHalaman) {
+        headerByKategori();
+        for (int i = 0; i < daftarBarang.size(); i++) {
+            Barang barang = daftarBarang.get(i);
+            int noUrut = (halamanIni - 1) * 10 + i + 1;
+
+            System.out.printf("| %-5s | %-5s | %-10s | %-7s | %-20s |\n",
+                                noUrut,
+                                barang.getId(),
+                                barang.getMerk(),
+                                barang.getStok(),
+                                formatRupiah.format(barang.getHarga()));
+        }
+        System.out.println("===============================================================");
         System.out.printf("[ Halaman %d dari %d ]\n", halamanIni, totalHalaman);
     }
 
@@ -217,19 +290,19 @@ public class ConsoleView {
 
     public int getPilihPage() {
         System.out.println();
-        System.out.println("1. Selanjutnya");
-        System.out.println("2. Sebelumnya");
-        System.out.println("3. Tambah Barang");
-        System.out.println("4. Hapus Barang");
-        System.out.println("5. Update Barang");
-        System.out.println("0. Kembali");
+        System.out.println("[9] Selanjutnya | [8] Sebelumnya | [0] Kembali");
+        System.out.println("");
+        System.out.println("1. Detail Barang");
+        System.out.println("2. Tambah Barang");
+        System.out.println("3. Hapus Barang");
+        System.out.println("4. Update Barang");
         System.out.print("Pilih: ");
         return  Helper.inputInt(input);
     }
 
     public String getNavigasi(int startIndex, int endIndex, String header) {
-        displayMsg("\n(N) Selanjutnya | (P) Sebelumnya | enter untuk kembali");
-        displayMsg("Pilih nomor (" + (startIndex +1)+ " - " + endIndex + ") untuk " + header.toLowerCase());
+        System.out.println("\n(N) Selanjutnya | (P) Sebelumnya | enter untuk kembali");
+        System.out.println("Pilih nomor (" + (startIndex +1)+ " - " + endIndex + ") untuk " + header.toLowerCase());
         System.out.print("\n**Pilihan anda : ");
         return input.nextLine();
     }

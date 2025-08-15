@@ -54,7 +54,7 @@ public class Controller {
 
     public void getBarangKategori() {
         view.menuKategori();
-        String header = "Pilih Kategori Barang";
+        String header = "Kategori Barang";
     
         int pilihKategori = -1;
         pilihKategori = view.getFormInt("Pilih: ");
@@ -104,16 +104,8 @@ public class Controller {
     }
 
     public void getAll() {
-        List<Barang> daftarBarang = service.getAllData();
-
-        if (daftarBarang.isEmpty()) {
-            view.displayMsg("\nData masih kosong.");
-            view.enterToContinue();
-            return;
-        }
-
-        paginationMenu(daftarBarang, "List Daftar Barang");
-
+        List<Barang> daftarBarang = cekBarang();
+        paginationMenu(daftarBarang, "Daftar Barang");
     }
 
     public void getTambah() {
@@ -140,12 +132,13 @@ public class Controller {
         view.header("Elektronik");
         try {
             String merk = view.getMerk();
-            int jumlah = view.getJumlah();
+            int stok = view.getStok();
             double harga = view.getHarga();
+            String model = view.getModel();
             JenisElektronik jenis = view.getJenisElektronik();
             String id = service.generateId();
 
-            Elektronik newElektronik = new Elektronik(id, merk, jumlah, harga, jenis);
+            Elektronik newElektronik = new Elektronik(id, merk, stok, harga, model, jenis);
             service.tambahData(newElektronik);
 
             view.displayMsg("Data ID: [ " + newElektronik.getId() + " ] berhasil ditambah.");
@@ -159,13 +152,13 @@ public class Controller {
 
         try {
             String merk = view.getMerk();
-            int jumlah = view.getJumlah();
+            int stok = view.getStok();
             double harga = view.getHarga();
             JenisSize size = view.getJenisSize();
             JenisPakaian jenis = view.getJenisPakaian();
             String id = service.generateId();
 
-            Pakaian newPakaian = new Pakaian(id, merk, jumlah, harga, size, jenis);
+            Pakaian newPakaian = new Pakaian(id, merk, stok, harga, size, jenis);
             service.tambahData(newPakaian);
 
             view.displayMsg("Data ID: [ " + newPakaian.getId() + " ] berhasil ditambah.");
@@ -174,26 +167,18 @@ public class Controller {
         }
     }
 
+    public void getDetail() {
+        List<Barang> daftarBarang = cekBarang();
+        paginationUpdateAndDelete(daftarBarang, "Detail Barang");
+    }
+
     public void getHapus() {
-        List<Barang> daftarBarang = service.getAllData();
-
-        if (daftarBarang.isEmpty()) {
-            view.displayMsg("\nData masih kosong.");
-            view.enterToContinue();
-            return;
-        }
-
+        List<Barang> daftarBarang = cekBarang();
         paginationUpdateAndDelete(daftarBarang, "Hapus Barang");
     }
 
     public void getUpdate() {
-        List<Barang> daftarBarang = service.getAllData();
-
-        if (daftarBarang.isEmpty()) {
-            view.displayMsg("\nData masih kosong.");
-            view.enterToContinue();
-            return;
-        }
+        List<Barang> daftarBarang = cekBarang();
         paginationUpdateAndDelete(daftarBarang, "Update Barang");
     }
 
@@ -214,6 +199,32 @@ public class Controller {
         }
     }
 
+    private void detailDataBarang(List<Barang> dataBarang, int nomor) {
+        Barang data = dataBarang.get(nomor -1);
+        
+        String id = data.getId();
+        String merk = data.getMerk();
+        int stok = data.getStok();
+        double harga = data.getHarga();
+        if (data.getKategori().contains("Elektronik")) {
+            Elektronik elektronik = (Elektronik) data;
+            
+            String model = elektronik.getModel();
+            JenisElektronik jenis = elektronik.getJenis();
+
+            view.detailBarangElektronik(id, merk, stok, harga, model, jenis);
+        } else if (data.getKategori().contains("Pakaian")) {
+            Pakaian pakaian = (Pakaian) data;
+
+            JenisSize size = pakaian.getSize();
+            JenisPakaian jenis = pakaian.getJenis();
+
+            view.detailBarangPakaian(id, merk, stok, harga, size, jenis);
+        }
+        view.enterToContinue();
+
+    }
+
     private void updateDataBarang(List<Barang> dataBarang, int nomor, String header) {
         Barang data = dataBarang.get(nomor -1);
         view.displayMsg("Rubah Data: " + data.getId());
@@ -225,12 +236,26 @@ public class Controller {
             view.displayMsg("");
 
             try {
+                String pesan = "";
+                String id = data.getId();
                 String merkBaru = view.getFormUpadate("Rubah Merk: ");
-                String jumlahBaru = view.getFormUpadate("Rubah Jumlah: ");
+                String stokBaru = view.getFormUpadate("Rubah stok: ");
                 String hargaBaru = view.getFormUpadate("Rubah Harga: ");
                 
-                String pesan = service.updateData(data.getId(), merkBaru, jumlahBaru, hargaBaru);
-                view.displayMsg(pesan);
+                if (data.getKategori().contains("Elektronik")) {
+                    String modelBaru = view.getFormUpadate("Rubah Model: ");
+                    JenisElektronik jenisBaru = view.getJenisElektronik();
+
+                    pesan = service.updateElektronik(id, merkBaru, stokBaru, hargaBaru, modelBaru, jenisBaru);
+                    view.displayMsg(pesan);
+                } else if (data.getKategori().contains("Pakaian")) {
+                    JenisSize sizeBaru = view.getJenisSize();
+                    JenisPakaian jenisBaru = view.getJenisPakaian();
+                    
+                    pesan = service.updatePakaian(id, merkBaru, stokBaru, hargaBaru, sizeBaru, jenisBaru);
+                    view.displayMsg(pesan);
+                }
+                
             } catch (IllegalArgumentException e) {
                 view.displayMsg("Error: " + e.getMessage());
             } finally {
@@ -256,6 +281,7 @@ public class Controller {
             view.header(header);
             String[] mods = header.split("\\ ");
             view.allBarang(subList, halamanIni, totalHalaman);
+            
             
             String indexInput = view.getNavigasi(startIndex, endIndex, header);
             
@@ -284,6 +310,8 @@ public class Controller {
                             updateDataBarang(daftarBarang, nomor, header);
                         } else if (mods[0].equalsIgnoreCase("Hapus")) {
                             hapusDataBarang(daftarBarang, nomor, header);
+                         } else if (mods[0].equalsIgnoreCase("Detail")) {
+                            detailDataBarang(daftarBarang, nomor);
                          }
                     } else {
                         view.displayMsg("Pilihan tidak valid.");
@@ -310,12 +338,17 @@ public class Controller {
             List<Barang> subList = daftarBarang.subList(startIndex, endIndex);
             
             view.header(header);
-            view.allBarang(subList, halamanIni, totalHalaman);
+
+            if (header.contains("Daftar")) {
+                view.allBarang(subList, halamanIni, totalHalaman);
+            } else {
+                view.barangByKategori(subList, halamanIni, totalHalaman);
+            }
 
             int pilihHalaman = view.getPilihPage();
 
             switch (pilihHalaman) {
-                case 1:
+                case 9:
                     if (halamanIni < totalHalaman) {
                         halamanIni++;
                     } else {
@@ -323,7 +356,7 @@ public class Controller {
                         view.enterToContinue();
                     } 
                     break;
-                case 2:
+                case 8:
                     if (halamanIni > 1) {
                         halamanIni--;
                     } else {
@@ -331,9 +364,10 @@ public class Controller {
                         view.enterToContinue();
                     }
                     break;
-                case 3: getTambah(); return;
-                case 4: getHapus(); return;
-                case 5: getUpdate(); return;
+                case 1: getDetail(); return;
+                case 2: getTambah(); return;
+                case 3: getHapus(); return;
+                case 4: getUpdate(); return;
                 case 0: return;
                 default:
                     view.displayMsg("Pilihan tidak valid");
@@ -351,8 +385,20 @@ public class Controller {
             view.displayMsg(pesan[i]);
         }
 
-        service.tambahElektronik(service.ggetAllElektronik());
+        service.tambahElektronik(service.getAllElektronik());
         service.tambahPakaian(service.getAllPakaian());
+    }
+
+    public List<Barang> cekBarang() {
+        List<Barang> daftarBarang = service.getAllData();
+        
+        if (daftarBarang.isEmpty()) {
+            view.displayMsg("\nData masih kosong.");
+            view.enterToContinue();
+            return null;
+        } else {
+            return daftarBarang; 
+        }
     }
 
 }
