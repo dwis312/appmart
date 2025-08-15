@@ -169,43 +169,30 @@ public class ConsoleView {
         System.out.print("Pilih : ");
     }
 
-    public void headerDetail(String modelSize) {
-        System.out.println("\n===========================================================================================");
-        System.out.printf("| %-5s | %-5s | %-10s | %-10s | %-10s | %-7s | %-20s |\n",
-        "No",
-        "Id",
-        "Merk",
-        modelSize,
-        "Kategori",
-        "Stok",
-        "Harga");
-        System.out.println("-------------------------------------------------------------------------------------------");
-    }
-
     public void detailBarangElektronik(String id, String merk, int stok, double harga, String model, JenisElektronik jenis) {
-        headerDetail("Model");
-        System.out.printf("| %-5s | %-5s | %-10s | %-10s | %-10s | %-7s | %-20s |\n",
-        "No",
-        id,
-        merk,
-        model,
-        jenis,
-        stok,
-        formatRupiah.format(harga));
-        System.out.println("===========================================================================================");
+        header("Detail: " + merk);
+
+        System.out.println();
+        System.out.println("ID Barang        : " + id);
+        System.out.println("Merk Barang      : " + merk);
+        System.out.println("Model Barang     : " + model);
+        System.out.println("Kategori Barang  : " + jenis);
+        System.out.println("Stok Barang      : " + stok);
+        System.out.println("Harga            : " + formatRupiah.format(harga) +"\n");
+        System.out.println("---------------------------------------");
     }
 
     public void detailBarangPakaian(String id, String merk, int stok, double harga, JenisSize size, JenisPakaian jenis ) {
-        headerDetail("Ukuran");
-        System.out.printf("| %-5s | %-5s | %-10s | %-10s | %-10s | %-7s | %-20s |\n",
-        "No",
-        id,
-        merk,
-        size,
-        jenis,
-        stok,
-        formatRupiah.format(harga));
-        System.out.println("===========================================================================================");
+        header("Detail: " + merk);
+        
+        System.out.println();
+        System.out.println("ID Barang        : " + id);
+        System.out.println("Merk Barang      : " + merk);
+        System.out.println("Ukuran Barang     : " + size);
+        System.out.println("Kategori Barang  : " + jenis);
+        System.out.println("Stok Barang      : " + stok);
+        System.out.println("Harga            : " + formatRupiah.format(harga) +"\n");
+        System.out.println("---------------------------------------");
     }
 
     public void headerTabel() {
