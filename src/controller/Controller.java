@@ -193,6 +193,7 @@ public class Controller {
             if(berhasil) {
                 view.displayMsg("berhasil dihapus: " + hapusBarang.getId());
                 view.enterToContinue();
+                return;
             }
         } else {
             view.displayMsg("Dibatalkan.");
@@ -225,7 +226,7 @@ public class Controller {
 
     }
 
-    private void updateDataBarang(List<Barang> dataBarang, int nomor, String header) {
+    private void updateBarang(List<Barang> dataBarang, int nomor, String header) {
         Barang data = dataBarang.get(nomor -1);
         view.displayMsg("Rubah Data: " + data.getId());
         int konfirm = view.getFormInt("\nYakin dirubah ?\n1. Ya Rubah\n2. Batal\nPilih: ");
@@ -268,13 +269,21 @@ public class Controller {
 
     private void paginationUpdateAndDelete(List<Barang> daftarBarang, String header) {
         int itemPage = 10;
-        int totalItem = daftarBarang.size();
-        int totalHalaman = (int) Math.ceil((double) totalItem / itemPage);
         int halamanIni = 1;
-
+        
         while (true) {
+            List<Barang> updateDataBarang = service.getAllData();
+            int totalItem = updateDataBarang.size();
+            int totalHalaman = (int) Math.ceil((double) totalItem / itemPage);
+
             int startIndex = (halamanIni - 1) * itemPage;
             int endIndex = Math.min(startIndex + itemPage, totalItem);
+
+            if (totalItem == 0) {
+                view.displayMsg("\nData masih kosong");
+                view.enterToContinue();
+                return;
+            }
 
             List<Barang> subList = daftarBarang.subList(startIndex, endIndex);
             
@@ -305,11 +314,15 @@ public class Controller {
                 try {
                     int nomor = Integer.parseInt(indexInput);
                     
-                    if (nomor >= 1 && nomor <= daftarBarang.size()) {
+                    if (nomor >= 1 && nomor <= updateDataBarang.size()) {
                          if(mods[0].equalsIgnoreCase("Update")) {
-                            updateDataBarang(daftarBarang, nomor, header);
+                            updateBarang(daftarBarang, nomor, header);
+
+                            updateDataBarang = service.getAllData();
                         } else if (mods[0].equalsIgnoreCase("Hapus")) {
                             hapusDataBarang(daftarBarang, nomor, header);
+
+                            updateDataBarang = service.getAllData();
                          } else if (mods[0].equalsIgnoreCase("Detail")) {
                             detailDataBarang(daftarBarang, nomor);
                          }
@@ -377,16 +390,20 @@ public class Controller {
     }
 
     private void getLoad() {
-        String[] pesan = new String[2];
-        pesan[0] = service.bacaData("data/elektronik.txt");
-        pesan[1] = service.bacaData("data/pakaian.txt");
-        
-        for (int i = 0; i < pesan.length; i++) {
-            view.displayMsg(pesan[i]);
-        }
 
-        service.tambahElektronik(service.getAllElektronik());
-        service.tambahPakaian(service.getAllPakaian());
+        /**
+         * migrasi data dari file teks ke database
+         * 
+         * String pesanMigrasiElektronik = service.migrateElektronik();
+         * view.displayMsg(pesanMigrasiElektronik);
+         * 
+         * String pesanMigrasiPakaian = service.migratePakaian();
+         * view.displayMsg(pesanMigrasiPakaian);
+         * 
+         */
+
+        String pesanLoadDb = service.loadDb();
+        view.displayMsg(pesanLoadDb);
     }
 
     public List<Barang> cekBarang() {
